@@ -1,11 +1,15 @@
 package roteador;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 public class TabelaRoteamento {
     /*Implemente uma estrutura de dados para manter a tabela de roteamento. 
      * A tabela deve possuir: IP Destino, Métrica e IP de Saída.
     */
+    
+    
+    private Map<String, String> routerTable;
     
     public TabelaRoteamento(){
     
