@@ -27,7 +27,7 @@ public class Roteador {
             return;
         }
         
-        /* Cria instâncias da tabela de roteamento e das threads de envio e recebimento de mensagens. */
+        /* Cria instâncias da tabela de roteamento e das threads de envio e recebimento de mensagens. */ 
         TabelaRoteamento tabela = new TabelaRoteamento();
         Thread sender = new Thread(new MessageReceiver(tabela));
         Thread receiver = new Thread(new MessageSender(tabela, ip_list));
