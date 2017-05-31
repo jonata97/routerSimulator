@@ -13,10 +13,19 @@ public class TabelaRoteamento {
     
     
     private List<EntradaTabelaRoteamento> tabelaRoteamento;
-    
+    private GerenciadorTabelaRoteamento gerenciadorTabelaRoteamento;
     
     public TabelaRoteamento(){
         
+    }
+    
+    
+    public void remove_ip_tabela(String ipToRemove) {
+        for (EntradaTabelaRoteamento entrada : this.tabelaRoteamento) {
+            if (entrada.getIpSaida().equals(ipToRemove)) {
+                tabelaRoteamento.remove(entrada);
+            }
+        }
     }
     
     
@@ -25,17 +34,31 @@ public class TabelaRoteamento {
        
         
         String[] lines = tabela_s.split("\\*");
-        System.out.println(lines[0]);
-     
+        
         for (int i = 0; i<lines.length; i++) {
+            
             
             String[] columns = lines[i].split(";");
          
+            
             for (EntradaTabelaRoteamento entrada : this.tabelaRoteamento) {
                 EntradaTabelaRoteamento novaEntrada = new EntradaTabelaRoteamento(columns[0], Integer.parseInt(columns[1]), IPAddress.getHostAddress());
+                
+                gerenciadorTabelaRoteamento.setIpAndTimeStamp(entrada.getIpSaida(),System.nanoTime());  
+                
                 if(entrada.getIpDestino().equals(columns[0])) {
+                   novaEntrada.addMetrica();
                    this.tabelaRoteamento.add(novaEntrada);
                 }
+                
+                if (entrada.getIpDestino().equals(columns[0]) && entrada.getMetrica() < novaEntrada.getMetrica()) {
+                    entrada.setIpSaida(novaEntrada.getIpSaida());
+                    novaEntrada.addMetrica();
+                    entrada.setMetrica(novaEntrada.getMetrica());
+                }
+                
+                
+                
             }
             
             
@@ -57,12 +80,19 @@ public class TabelaRoteamento {
         
         /* Converta a tabela de rotamento para string, conforme formato definido no protocolo . */
         
+        if (!this.tabelaRoteamento.isEmpty()) {
+            tabela_string = "";
+            for (EntradaTabelaRoteamento entrada : this.tabelaRoteamento) {
+        //        *192.168.1.2;1*192.168.1.3;1
+                   tabela_string = tabela_string + "*"+entrada.getIpDestino()+";"+entrada.getMetrica();
+           }
+        }
         
         return tabela_string;
     }
     
     
-   // *192.168.1.2;1*192.168.1.3;1
+
 
     
 }
