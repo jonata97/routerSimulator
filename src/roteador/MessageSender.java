@@ -58,7 +58,7 @@ public class MessageSender implements Runnable{
                 }
                 
                 /* Configura pacote para envio da menssagem para o roteador vizinho na porta 5000*/
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 5000);         
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 5002);         
                 
                 /* Realiza envio da mensagem. */
                 try {
