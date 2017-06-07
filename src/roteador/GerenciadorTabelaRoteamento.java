@@ -22,12 +22,18 @@ import java.util.logging.Logger;
 public class GerenciadorTabelaRoteamento implements Runnable {
 
     TabelaRoteamento tabela; 
-    Map<String,Long> ip_timeStamp = new HashMap<>();
+    private static Map<String, Long> ip_timeStamp = new HashMap<String, Long>();
     
-    public void setIpAndTimeStamp(String ipSaida, long timeStamp) {
+    
+    public GerenciadorTabelaRoteamento (TabelaRoteamento tabela) {
+        this.tabela = tabela;
+    }
+    
+    public static void setIpAndTimeStamp(String ipSaida, long timeStamp) {
         if (ip_timeStamp.containsKey(ipSaida)) {
             ip_timeStamp.remove(ipSaida);
             ip_timeStamp.put(ipSaida, timeStamp/1000000000);
+            System.out.println("setting ip and time stamp");
         } else {
             ip_timeStamp.put(ipSaida, timeStamp/1000000000);
         }
@@ -36,17 +42,25 @@ public class GerenciadorTabelaRoteamento implements Runnable {
     
     @Override
     public void run() {
+    while (true) {
         
-        
+      //  System.out.println("Size" +  ip_timeStamp.size());
         for (Map.Entry<String, Long> entry : ip_timeStamp.entrySet())
         {
+            System.out.println("testando se entra no for");
             long now = System.nanoTime()/1000000000;
             if (now-entry.getValue() > 30) {
                 tabela.remove_ip_tabela(entry.getKey());
+                System.out.println("removing ip from table");
             }
-        }       
+        }     
         
-         
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(GerenciadorTabelaRoteamento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
        
         
     }
