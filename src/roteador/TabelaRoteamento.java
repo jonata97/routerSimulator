@@ -3,7 +3,10 @@ package roteador;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -11,7 +14,7 @@ import java.util.concurrent.Semaphore;
 
 public class TabelaRoteamento {
     
-    private ArrayList<EntradaTabelaRoteamento> tabelaRoteamento;
+    private List<EntradaTabelaRoteamento> tabelaRoteamento;
     Semaphore sem;
     
     
@@ -32,7 +35,7 @@ public class TabelaRoteamento {
     }
     
     
-    public void update_tabela(String tabela_s,  InetAddress IPAddress){
+    public void update_tabela(String tabela_s,  InetAddress IPAddress) {
     
         // Caso a tabela recebida contenha ! 
         if (tabela_s.contains("!")) {
@@ -133,7 +136,7 @@ public class TabelaRoteamento {
     }
     
     // 
-    public String get_tabela_string(){
+    public String get_tabela_string() {
         /* Tabela de roteamento vazia conforme especificado no protocolo */
         String tabela_string = "";
         
@@ -144,18 +147,21 @@ public class TabelaRoteamento {
             tabela_string = "!";
             
         } else {
-            
-            for (EntradaTabelaRoteamento entrada : this.tabelaRoteamento) {                
-                   tabela_string = tabela_string + "*"+entrada.getIpDestino()+";"+entrada.getMetrica();      
+            try {
+                sem.acquire();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TabelaRoteamento.class.getName()).log(Level.SEVERE, null, ex);
             }
-           
+            for (Iterator<EntradaTabelaRoteamento> it = this.tabelaRoteamento.iterator(); it.hasNext();) { 
+                  EntradaTabelaRoteamento entrada = it.next();
+                  tabela_string = tabela_string + "*"+entrada.getIpDestino()+";"+entrada.getMetrica();      
+            }
+            sem.release();
+            
+        } 
+            
+           return tabela_string;
         }
         
-     return tabela_string;
+     
     }
-    
-    
-
-
-    
-}
